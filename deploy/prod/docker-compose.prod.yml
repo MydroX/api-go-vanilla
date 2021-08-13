@@ -1,0 +1,10 @@
+version: "3.3"
+services: 
+  api-go:
+    build:
+      context: ../
+      dockerfile: deploy/prod/Dockerfile
+
+  api-go-db:
+    env_file: 
+      - ../.env
