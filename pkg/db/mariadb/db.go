@@ -1,17 +1,16 @@
-package init
+package mariadb
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 )
 
-// Initialize database connection and return pointer of this database connection
-func DB() *gorm.DB {
+func New() (*sql.DB, error) {
 	var err error
 	err = godotenv.Load(".env")
 	if err != nil {
@@ -31,16 +30,18 @@ func DB() *gorm.DB {
 	dbName := os.Getenv("MYSQL_DATABASE")
 	dbPassword := os.Getenv("MYSQL_PASSWORD")
 
-	dsn := dbUser + ":" + dbPassword + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName + "?charset=utf8&parseTime=True&loc=Local"
-	fmt.Println(dsn)
+	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Europe/Paris",
+		dbUser,
+		dbPassword,
+		dbHost,
+		dbPort,
+		dbName,
+	)
 
-	var db *gorm.DB
-	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
-		DisableForeignKeyConstraintWhenMigrating: true,
-	})
+	db, err := sql.Open("mysql", dataSourceName)
 	if err != nil {
 		log.Fatal("Cannot connect to database")
 	}
 
-	return db
+	return db, nil
 }
