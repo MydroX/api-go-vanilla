@@ -33,6 +33,25 @@ func (m *medalRepo) Get(ctx context.Context, id int64) (*models.Medal, error) {
 	panic("not implemented") // TODO: Implement
 }
 
+func (m *medalRepo) GetAll(ctx context.Context) ([]*models.Medal, error) {
+	stmt := "SELECT * FROM medal"
+	res, err := m.db.QueryContext(ctx, stmt)
+
+	var medals []*models.Medal
+	for res.Next() {
+		var medal models.Medal
+		if err := res.Scan(&medal.ID, &medal.Name); err != nil {
+			return nil, err
+		}
+		medals = append(medals, &medal)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	return medals, nil
+}
+
 func (m *medalRepo) Update(ctx context.Context, medal *models.Medal) error {
 	panic("not implemented") // TODO: Implement
 }

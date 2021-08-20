@@ -28,6 +28,14 @@ func (m *medalUC) Get(ctx context.Context, id int64) (*models.Medal, error) {
 	panic("not implemented") // TODO: Implement
 }
 
+func (m *medalUC) GetAll(ctx context.Context) ([]*models.Medal, error) {
+	medals, err := m.repo.GetAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return medals, nil
+}
+
 func (m *medalUC) Update(ctx context.Context, medal *models.Medal) error {
 	panic("not implemented") // TODO: Implement
 }
