@@ -30,7 +30,7 @@ func New() (*sql.DB, error) {
 	dbName := os.Getenv("MYSQL_DATABASE")
 	dbPassword := os.Getenv("MYSQL_PASSWORD")
 
-	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Europe/Paris",
+	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local&multiStatements=true",
 		dbUser,
 		dbPassword,
 		dbHost,
@@ -40,7 +40,7 @@ func New() (*sql.DB, error) {
 
 	db, err := sql.Open("mysql", dataSourceName)
 	if err != nil {
-		log.Fatal("Cannot connect to database")
+		log.Fatalf("Cannot connect to database: %v", err)
 	}
 
 	return db, nil

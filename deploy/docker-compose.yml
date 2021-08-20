@@ -16,10 +16,11 @@ services:
       - api-go
   
   api-go-db:
-    image: mysql:8.0.23
+    image: mariadb:10.6.4
     container_name: api-go-db
-    volumes: 
-      - db-api-go:/var/lib/mysql
+    # volumes: 
+      # - db-data:/var/lib/mysql
+      # - db-conf:/etc/mysql
     ports: 
       - 3306:3306
     networks: 
@@ -29,5 +30,6 @@ networks:
   api-go:
     external: true
   
-volumes:
-  db-api-go:
+# volumes:
+  # db-data:
+  # db-conf:

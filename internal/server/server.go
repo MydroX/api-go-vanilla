@@ -2,10 +2,14 @@ package server
 
 import (
 	"database/sql"
+	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 type Server struct {
-	DB *sql.DB
+	Router *mux.Router
+	DB     *sql.DB
 }
 
 func NewServer(db *sql.DB) *Server {
@@ -15,7 +19,13 @@ func NewServer(db *sql.DB) *Server {
 }
 
 func (s *Server) Run() error {
-	if err := handlers(); err != nil {
+	s.Router = mux.NewRouter()
+
+	if err := s.handlers(); err != nil {
+		return err
+	}
+
+	if err := http.ListenAndServe(":8080", s.Router); err != nil {
 		return err
 	}
 
