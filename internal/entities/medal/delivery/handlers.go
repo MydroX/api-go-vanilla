@@ -7,7 +7,9 @@ import (
 
 	"github.com/MydroX/api-go/internal/entities/medal"
 	"github.com/MydroX/api-go/internal/models"
+	customContext "github.com/MydroX/api-go/pkg/context"
 	"github.com/MydroX/api-go/pkg/delivery"
+	"github.com/gorilla/mux"
 )
 
 type MedalHandlers struct {
@@ -28,11 +30,27 @@ func (h *MedalHandlers) Create(w http.ResponseWriter, r *http.Request) {
 	err := h.medalUC.Create(ctx, medal)
 	if err != nil {
 		delivery.JSONError(w, http.StatusInternalServerError, fmt.Sprintf("Unable to create medal: %v", err))
+		return
 	}
 	delivery.JSONResponse(w, http.StatusCreated, "Medal created succesfully")
 }
 
 func (h *MedalHandlers) Get(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+
+	param := mux.Vars(r)
+	id := param["id"]
+
+	medal, err := h.medalUC.Get(&ctx, id)
+	if err != nil {
+		if ctx.Value(customContext.HttpCode) == http.StatusNotFound {
+			delivery.JSONError(w, http.StatusNotFound, fmt.Sprintf("%v", err))
+			return
+		}
+		delivery.JSONError(w, http.StatusInternalServerError, fmt.Sprintf("Unable to get medals: %v", err))
+		return
+	}
+	delivery.JSONResponseWithBody(w, medal, http.StatusOK, "Medal retrieved successfully")
 
 }
 

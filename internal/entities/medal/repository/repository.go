@@ -4,9 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"net/http"
 
 	"github.com/MydroX/api-go/internal/entities/medal"
 	"github.com/MydroX/api-go/internal/models"
+	customContext "github.com/MydroX/api-go/pkg/context"
 )
 
 type medalRepo struct {
@@ -29,8 +31,22 @@ func (m *medalRepo) Create(ctx context.Context, medal *models.Medal) error {
 	return nil
 }
 
-func (m *medalRepo) Get(ctx context.Context, id int64) (*models.Medal, error) {
-	panic("not implemented") // TODO: Implement
+func (m *medalRepo) Get(ctx *context.Context, id int64) (*models.Medal, error) {
+	var medal models.Medal
+
+	err := m.db.QueryRowContext(*ctx, "SELECT * FROM medal WHERE id = ?", id).Scan(
+		&medal.ID,
+		&medal.Name,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			*ctx = context.WithValue(*ctx, customContext.HttpCode, http.StatusNotFound)
+			return nil, err
+		}
+		return nil, err
+	}
+	return &medal, nil
 }
 
 func (m *medalRepo) GetAll(ctx context.Context) ([]*models.Medal, error) {
