@@ -21,9 +21,9 @@ func NewMedalRepository(db *sql.DB) medal.Repository {
 	}
 }
 
-func (m *medalRepo) Create(ctx context.Context, medal *models.Medal) error {
+func (m *medalRepo) Create(ctx *context.Context, medal *models.Medal) error {
 	stmt := fmt.Sprintf(`INSERT INTO medal (name) VALUES ("%v")`, medal.Name)
-	_, err := m.db.QueryContext(ctx, stmt)
+	_, err := m.db.QueryContext(*ctx, stmt)
 
 	if err != nil {
 		return err
@@ -49,9 +49,9 @@ func (m *medalRepo) Get(ctx *context.Context, id int64) (*models.Medal, error) {
 	return &medal, nil
 }
 
-func (m *medalRepo) GetAll(ctx context.Context) ([]*models.Medal, error) {
+func (m *medalRepo) GetAll(ctx *context.Context) ([]*models.Medal, error) {
 	stmt := "SELECT * FROM medal"
-	res, err := m.db.QueryContext(ctx, stmt)
+	res, err := m.db.QueryContext(*ctx, stmt)
 
 	var medals []*models.Medal
 	for res.Next() {
@@ -68,10 +68,10 @@ func (m *medalRepo) GetAll(ctx context.Context) ([]*models.Medal, error) {
 	return medals, nil
 }
 
-func (m *medalRepo) Update(ctx context.Context, medal *models.Medal) error {
+func (m *medalRepo) Update(ctx *context.Context, medal *models.Medal) error {
 	panic("not implemented") // TODO: Implement
 }
 
-func (m *medalRepo) Delete(ctx context.Context, id int64) error {
+func (m *medalRepo) Delete(ctx *context.Context, id int64) error {
 	panic("not implemented") // TODO: Implement
 }

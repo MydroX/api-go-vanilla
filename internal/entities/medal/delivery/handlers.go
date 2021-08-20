@@ -27,7 +27,7 @@ func (h *MedalHandlers) Create(w http.ResponseWriter, r *http.Request) {
 		Name: r.FormValue("name"),
 	}
 
-	err := h.medalUC.Create(ctx, medal)
+	err := h.medalUC.Create(&ctx, medal)
 	if err != nil {
 		delivery.JSONError(w, http.StatusInternalServerError, fmt.Sprintf("Unable to create medal: %v", err))
 		return
@@ -57,7 +57,7 @@ func (h *MedalHandlers) Get(w http.ResponseWriter, r *http.Request) {
 func (h *MedalHandlers) GetAll(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
-	medals, err := h.medalUC.GetAll(ctx)
+	medals, err := h.medalUC.GetAll(&ctx)
 	if err != nil {
 		delivery.JSONError(w, http.StatusInternalServerError, fmt.Sprintf("Unable to get medals: %v", err))
 		return

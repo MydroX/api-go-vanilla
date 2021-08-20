@@ -19,7 +19,7 @@ func NewMedalUseCase(repo medal.Repository) medal.UseCase {
 	}
 }
 
-func (m *medalUC) Create(ctx context.Context, medal *models.Medal) error {
+func (m *medalUC) Create(ctx *context.Context, medal *models.Medal) error {
 	if err := m.repo.Create(ctx, medal); err != nil {
 		return err
 	}
@@ -43,7 +43,7 @@ func (m *medalUC) Get(ctx *context.Context, idStr string) (*models.Medal, error)
 	return medal, nil
 }
 
-func (m *medalUC) GetAll(ctx context.Context) ([]*models.Medal, error) {
+func (m *medalUC) GetAll(ctx *context.Context) ([]*models.Medal, error) {
 	medals, err := m.repo.GetAll(ctx)
 	if err != nil {
 		return nil, err
@@ -51,10 +51,10 @@ func (m *medalUC) GetAll(ctx context.Context) ([]*models.Medal, error) {
 	return medals, nil
 }
 
-func (m *medalUC) Update(ctx context.Context, medal *models.Medal) error {
+func (m *medalUC) Update(ctx *context.Context, medal *models.Medal) error {
 	panic("not implemented") // TODO: Implement
 }
 
-func (m *medalUC) Delete(ctx context.Context, id int64) error {
+func (m *medalUC) Delete(ctx *context.Context, id int64) error {
 	panic("not implemented") // TODO: Implement
 }
