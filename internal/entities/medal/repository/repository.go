@@ -85,5 +85,15 @@ func (m *medalRepo) Update(ctx *context.Context, medal *models.Medal) error {
 }
 
 func (m *medalRepo) Delete(ctx *context.Context, id int64) error {
-	panic("not implemented") // TODO: Implement
+	res, err := m.db.ExecContext(*ctx, "DELETE FROM medal WHERE id = ?", id)
+
+	if v, _ := res.RowsAffected(); v == 0 {
+		*ctx = context.WithValue(*ctx, customContext.HttpCode, http.StatusNotFound)
+		return errors.New("id not found")
+	}
+
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -63,5 +63,14 @@ func (m *medalUC) Update(ctx *context.Context, medal *models.Medal) error {
 }
 
 func (m *medalUC) Delete(ctx *context.Context, id int64) error {
-	panic("not implemented") // TODO: Implement
+	if id <= 0 {
+		return errors.New("invalid ID")
+	}
+
+	err := m.repo.Delete(ctx, id)
+
+	if err != nil {
+		return err
+	}
+	return nil
 }

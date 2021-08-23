@@ -58,7 +58,6 @@ func (h *MedalHandlers) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	delivery.JSONResponseWithBody(w, medal, http.StatusOK, "medal retrieved successfully")
-
 }
 
 func (h *MedalHandlers) GetAll(w http.ResponseWriter, r *http.Request) {
@@ -101,5 +100,28 @@ func (h *MedalHandlers) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *MedalHandlers) Delete(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
 
+	param := mux.Vars(r)
+	idStr := param["id"]
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		if ctx.Value(customContext.HttpCode) == http.StatusNotFound {
+			delivery.JSONError(w, http.StatusNotFound, fmt.Sprintf("unable to update medal: %v", err))
+			return
+		}
+		delivery.JSONError(w, http.StatusInternalServerError, fmt.Sprintf("unable to delete medal: %v", err))
+		return
+	}
+
+	err = h.medalUC.Delete(&ctx, id)
+	if err != nil {
+		if ctx.Value(customContext.HttpCode) == http.StatusNotFound {
+			delivery.JSONError(w, http.StatusNotFound, fmt.Sprintf("%v", err))
+			return
+		}
+		delivery.JSONError(w, http.StatusInternalServerError, "unable to delete medals: no medal found")
+		return
+	}
+	delivery.JSONResponse(w, http.StatusOK, "medal deleted successfully")
 }
