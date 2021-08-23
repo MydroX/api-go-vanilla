@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"errors"
-	"strconv"
 
 	"github.com/MydroX/api-go/internal/entities/medal"
 	"github.com/MydroX/api-go/internal/models"
@@ -26,14 +25,9 @@ func (m *medalUC) Create(ctx *context.Context, medal *models.Medal) error {
 	return nil
 }
 
-func (m *medalUC) Get(ctx *context.Context, idStr string) (*models.Medal, error) {
-	id, err := strconv.ParseInt(idStr, 10, 64)
-	if err != nil {
-		return nil, err
-	}
-
+func (m *medalUC) Get(ctx *context.Context, id int64) (*models.Medal, error) {
 	if id < 0 {
-		return nil, errors.New("cannot get medal: wrong ID format")
+		return nil, errors.New("cannot get medal: invalid ID")
 	}
 
 	medal, err := m.repo.Get(ctx, id)

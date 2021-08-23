@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/MydroX/api-go/internal/entities/medal"
 	"github.com/MydroX/api-go/internal/models"
@@ -29,17 +30,23 @@ func (h *MedalHandlers) Create(w http.ResponseWriter, r *http.Request) {
 
 	err := h.medalUC.Create(&ctx, medal)
 	if err != nil {
-		delivery.JSONError(w, http.StatusInternalServerError, fmt.Sprintf("Unable to create medal: %v", err))
+		delivery.JSONError(w, http.StatusInternalServerError, fmt.Sprintf("unable to create medal: %v", err))
 		return
 	}
-	delivery.JSONResponse(w, http.StatusCreated, "Medal created succesfully")
+	delivery.JSONResponse(w, http.StatusCreated, "medal created succesfully")
 }
 
 func (h *MedalHandlers) Get(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
 	param := mux.Vars(r)
-	id := param["id"]
+	idStr := param["id"]
+
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		delivery.JSONError(w, http.StatusInternalServerError, fmt.Sprintf("unable to get medal: %v", err))
+		return
+	}
 
 	medal, err := h.medalUC.Get(&ctx, id)
 	if err != nil {
@@ -47,10 +54,10 @@ func (h *MedalHandlers) Get(w http.ResponseWriter, r *http.Request) {
 			delivery.JSONError(w, http.StatusNotFound, fmt.Sprintf("%v", err))
 			return
 		}
-		delivery.JSONError(w, http.StatusInternalServerError, fmt.Sprintf("Unable to get medals: %v", err))
+		delivery.JSONError(w, http.StatusInternalServerError, "unable to get medals: no medal found")
 		return
 	}
-	delivery.JSONResponseWithBody(w, medal, http.StatusOK, "Medal retrieved successfully")
+	delivery.JSONResponseWithBody(w, medal, http.StatusOK, "medal retrieved successfully")
 
 }
 
@@ -59,10 +66,10 @@ func (h *MedalHandlers) GetAll(w http.ResponseWriter, r *http.Request) {
 
 	medals, err := h.medalUC.GetAll(&ctx)
 	if err != nil {
-		delivery.JSONError(w, http.StatusInternalServerError, fmt.Sprintf("Unable to get medals: %v", err))
+		delivery.JSONError(w, http.StatusInternalServerError, fmt.Sprintf("unable to get medals: %v", err))
 		return
 	}
-	delivery.JSONResponseWithBody(w, medals, http.StatusOK, "Medals retrieved successfully")
+	delivery.JSONResponseWithBody(w, medals, http.StatusOK, "medals retrieved successfully")
 }
 
 func (h *MedalHandlers) Update(w http.ResponseWriter, r *http.Request) {
