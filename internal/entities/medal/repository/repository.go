@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -69,7 +70,18 @@ func (m *medalRepo) GetAll(ctx *context.Context) ([]*models.Medal, error) {
 }
 
 func (m *medalRepo) Update(ctx *context.Context, medal *models.Medal) error {
-	panic("not implemented") // TODO: Implement
+	res, err := m.db.ExecContext(*ctx, "UPDATE medal SET name = ? WHERE id = ?", medal.Name, medal.ID)
+
+	if v, _ := res.RowsAffected(); v == 0 {
+		*ctx = context.WithValue(*ctx, customContext.HttpCode, http.StatusNotFound)
+		return errors.New("id not found")
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (m *medalRepo) Delete(ctx *context.Context, id int64) error {

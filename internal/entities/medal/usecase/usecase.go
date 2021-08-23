@@ -52,7 +52,20 @@ func (m *medalUC) GetAll(ctx *context.Context) ([]*models.Medal, error) {
 }
 
 func (m *medalUC) Update(ctx *context.Context, medal *models.Medal) error {
-	panic("not implemented") // TODO: Implement
+	if medal.Name == "" {
+		return errors.New("invalid name")
+	}
+
+	if medal.ID <= 0 {
+		return errors.New("invalid ID")
+	}
+
+	err := m.repo.Update(ctx, medal)
+
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (m *medalUC) Delete(ctx *context.Context, id int64) error {
