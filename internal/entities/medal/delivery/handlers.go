@@ -6,11 +6,14 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gorilla/mux"
+
 	"github.com/MydroX/api-go/internal/entities/medal"
 	"github.com/MydroX/api-go/internal/models"
-	customContext "github.com/MydroX/api-go/pkg/context"
 	"github.com/MydroX/api-go/pkg/delivery"
-	"github.com/gorilla/mux"
+
+	mydroxContext "github.com/MydroX/api-go/pkg/context"
+	mydroxTime "github.com/MydroX/api-go/pkg/time"
 )
 
 // MedalHandlers store a medal usecase interface
@@ -28,7 +31,9 @@ func (h *MedalHandlers) Create(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
 	medal := &models.Medal{
-		Name: r.FormValue("name"),
+		Name:      r.FormValue("name"),
+		CreatedAt: mydroxTime.GetTimeNow(),
+		UpdatedAt: mydroxTime.GetTimeNow(),
 	}
 
 	err := h.medalUC.Create(&ctx, medal)
@@ -54,7 +59,7 @@ func (h *MedalHandlers) GetByID(w http.ResponseWriter, r *http.Request) {
 
 	medal, err := h.medalUC.GetByID(&ctx, id)
 	if err != nil {
-		if ctx.Value(customContext.HTTPCode) == http.StatusNotFound {
+		if ctx.Value(mydroxContext.HTTPCode) == http.StatusNotFound {
 			delivery.JSONResponse(w, http.StatusNotFound, fmt.Sprintf("%v", err))
 			return
 		}
@@ -95,7 +100,7 @@ func (h *MedalHandlers) Update(w http.ResponseWriter, r *http.Request) {
 
 	err = h.medalUC.Update(&ctx, &medal)
 	if err != nil {
-		if ctx.Value(customContext.HTTPCode) == http.StatusNotFound {
+		if ctx.Value(mydroxContext.HTTPCode) == http.StatusNotFound {
 			delivery.JSONResponse(w, http.StatusNotFound, fmt.Sprintf("unable to update medal: %v", err))
 			return
 		}
@@ -113,7 +118,7 @@ func (h *MedalHandlers) Delete(w http.ResponseWriter, r *http.Request) {
 	idStr := param["id"]
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
-		if ctx.Value(customContext.HTTPCode) == http.StatusNotFound {
+		if ctx.Value(mydroxContext.HTTPCode) == http.StatusNotFound {
 			delivery.JSONResponse(w, http.StatusNotFound, fmt.Sprintf("unable to update medal: %v", err))
 			return
 		}
@@ -123,7 +128,7 @@ func (h *MedalHandlers) Delete(w http.ResponseWriter, r *http.Request) {
 
 	err = h.medalUC.Delete(&ctx, id)
 	if err != nil {
-		if ctx.Value(customContext.HTTPCode) == http.StatusNotFound {
+		if ctx.Value(mydroxContext.HTTPCode) == http.StatusNotFound {
 			delivery.JSONResponse(w, http.StatusNotFound, fmt.Sprintf("%v", err))
 			return
 		}
