@@ -6,10 +6,10 @@ import (
 	"log"
 	"os"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 )
 
+// New creates and returns a new DB connection
 func New() (*sql.DB, error) {
 	var err error
 	err = godotenv.Load(".env")

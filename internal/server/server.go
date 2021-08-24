@@ -7,17 +7,20 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// Server stores the router and the database connection of the application
 type Server struct {
 	Router *mux.Router
 	DB     *sql.DB
 }
 
+// NewServer create a new server
 func NewServer(db *sql.DB) *Server {
 	return &Server{
 		DB: db,
 	}
 }
 
+// Run the server of the application
 func (s *Server) Run() error {
 	s.Router = mux.NewRouter()
 
@@ -25,7 +28,8 @@ func (s *Server) Run() error {
 		return err
 	}
 
-	if err := http.ListenAndServe(":8080", s.Router); err != nil {
+	err := http.ListenAndServe(":8080", s.Router)
+	if err != nil {
 		return err
 	}
 

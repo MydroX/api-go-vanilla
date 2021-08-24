@@ -3,5 +3,6 @@ package context
 type key int
 
 const (
-	HttpCode key = 1
+	// HTTPCode is used to return a special context to represent http status code.
+	HTTPCode key = 1
 )

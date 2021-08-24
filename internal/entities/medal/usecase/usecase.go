@@ -12,6 +12,7 @@ type medalUC struct {
 	repo medal.Repository
 }
 
+// NewMedalUseCase creates a new usecase for the medal entity
 func NewMedalUseCase(repo medal.Repository) medal.UseCase {
 	return &medalUC{
 		repo: repo,
@@ -19,18 +20,23 @@ func NewMedalUseCase(repo medal.Repository) medal.UseCase {
 }
 
 func (m *medalUC) Create(ctx *context.Context, medal *models.Medal) error {
-	if err := m.repo.Create(ctx, medal); err != nil {
+	if medal.Name == "" {
+		return errors.New("invalid name")
+	}
+
+	err := m.repo.Create(ctx, medal)
+	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (m *medalUC) Get(ctx *context.Context, id int64) (*models.Medal, error) {
+func (m *medalUC) GetByID(ctx *context.Context, id int64) (*models.Medal, error) {
 	if id < 0 {
 		return nil, errors.New("cannot get medal: invalid ID")
 	}
 
-	medal, err := m.repo.Get(ctx, id)
+	medal, err := m.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}

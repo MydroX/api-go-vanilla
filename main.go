@@ -5,6 +5,7 @@ import (
 
 	"github.com/MydroX/api-go/internal/server"
 	"github.com/MydroX/api-go/pkg/db/mariadb"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {

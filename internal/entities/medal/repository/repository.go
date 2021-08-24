@@ -16,6 +16,7 @@ type medalRepo struct {
 	db *sql.DB
 }
 
+// NewMedalRepository returns a new instance of the medal repository
 func NewMedalRepository(db *sql.DB) medal.Repository {
 	return &medalRepo{
 		db: db,
@@ -32,7 +33,7 @@ func (m *medalRepo) Create(ctx *context.Context, medal *models.Medal) error {
 	return nil
 }
 
-func (m *medalRepo) Get(ctx *context.Context, id int64) (*models.Medal, error) {
+func (m *medalRepo) GetByID(ctx *context.Context, id int64) (*models.Medal, error) {
 	var medal models.Medal
 
 	err := m.db.QueryRowContext(*ctx, "SELECT * FROM medal WHERE id = ?", id).Scan(
@@ -42,7 +43,7 @@ func (m *medalRepo) Get(ctx *context.Context, id int64) (*models.Medal, error) {
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			*ctx = context.WithValue(*ctx, customContext.HttpCode, http.StatusNotFound)
+			*ctx = context.WithValue(*ctx, customContext.HTTPCode, http.StatusNotFound)
 			return nil, err
 		}
 		return nil, err
@@ -73,7 +74,7 @@ func (m *medalRepo) Update(ctx *context.Context, medal *models.Medal) error {
 	res, err := m.db.ExecContext(*ctx, "UPDATE medal SET name = ? WHERE id = ?", medal.Name, medal.ID)
 
 	if v, _ := res.RowsAffected(); v == 0 {
-		*ctx = context.WithValue(*ctx, customContext.HttpCode, http.StatusNotFound)
+		*ctx = context.WithValue(*ctx, customContext.HTTPCode, http.StatusNotFound)
 		return errors.New("id not found")
 	}
 
@@ -88,7 +89,7 @@ func (m *medalRepo) Delete(ctx *context.Context, id int64) error {
 	res, err := m.db.ExecContext(*ctx, "DELETE FROM medal WHERE id = ?", id)
 
 	if v, _ := res.RowsAffected(); v == 0 {
-		*ctx = context.WithValue(*ctx, customContext.HttpCode, http.StatusNotFound)
+		*ctx = context.WithValue(*ctx, customContext.HTTPCode, http.StatusNotFound)
 		return errors.New("id not found")
 	}
 
